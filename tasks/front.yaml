@@ -26,7 +26,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: add the frontend as submission host
-  action: shell bash -lc 'qconf -as {{sge_server_name}}'
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -as {{sge_server_name}}'
   ignore_errors: yes
 #- command: qconf -as {{sge_server_name}}
 
@@ -37,19 +37,27 @@
 #- shell: qconf -se {{vnode_prefix}}{{item}}.localdomain || qconf -Ae /tmp/{{vnode_prefix}}{{item}}.def
 #  with_sequence: start=1 end={{max_number_of_nodes}}
 - name: add execution hosts
-  action: shell bash -lc 'qconf -se {{vnode_prefix}}{{item}}.localdomain || qconf -Ae "/tmp/{{vnode_prefix}}{{item}}.def"'
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -se {{vnode_prefix}}{{item}}.localdomain || qconf -Ae "/tmp/{{vnode_prefix}}{{item}}.def"'
   with_sequence: start=1 end={{max_number_of_nodes}}
   ignore_errors: yes
 
 #- shell: qconf -ah {{vnode_prefix}}{{item}}.localdomain
 #  with_sequence: start=1 end={{max_number_of_nodes}}
 - name: add execution hosts
-  action: shell bash -lc 'qconf -ah {{vnode_prefix}}{{item}}.localdomain'
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -ah {{vnode_prefix}}{{item}}.localdomain'
   with_sequence: start=1 end={{max_number_of_nodes}}
   ignore_errors: yes
 
 - name: Copy 'all_q.conf' file
   copy: dest=/tmp/all.q src=all_q.conf mode=0644 force=no
+
+#Change cpu slots for wn {{sge_wn_cpus}}
+- name: Change cpu slots for wn
+  lineinfile:
+    path: /tmp/all.q
+    regexp: '^slots'
+    line: slots                 {{sge_wn_cpus}}
+
 
 - copy:
     content: |
@@ -59,10 +67,15 @@
 
 #- shell: qconf -shgrp @allhosts || qconf -Ahgrp /tmp/allhosts.hgrp
 - name: add hosts to the default queue
-  action: shell bash -lc ' qconf -shgrp @allhosts || qconf -Ahgrp "/tmp/allhosts.hgrp"'
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Mhgrp "/tmp/allhosts.hgrp"'
   ignore_errors: yes
 
 #- shell: qconf -sq all.q || qconf -Aq /tmp/all.q
 - name: create default queue
-  action: shell bash -lc 'qconf -sq all.q || qconf -Aq /tmp/all.q'
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -sq all.q || /opt/sge/bin/lx-amd64/qconf -Aq "/tmp/all.q"'
+  ignore_errors: yes
+
+#- shell: qconf -Mq /tmp/all.q
+- name: Modify default queue
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Mq "/tmp/all.q"'
   ignore_errors: yes

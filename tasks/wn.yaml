@@ -1,8 +1,9 @@
 ---
-- name: create default directories
-  file: path={{SGE_ROOT}}/default/common/ state=directory
-  when: ansible_os_family == "RedHat"
+- name: Wait until the file bootstrap on front is present before continuing
+  wait_for:
+    path: /opt/sge/default/common/bootstrap
 
-- name: Set the SGE qmaster node
-  action: copy dest={{SGE_ROOT}}/default/common/act_qmaster content={{sge_server_name}}
+- name: Copy service file
+  copy: src=sge_execd.service dest=/etc/systemd/system/sge_execd.service
   notify: restart {{EXEC_SERVICE}}
+
