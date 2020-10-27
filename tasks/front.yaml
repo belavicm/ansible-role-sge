@@ -97,8 +97,8 @@
 #  ignore_errors: yes
 
 #- shell: qconf -Mp mpi /tmp/mpi.pe
-- name: Modify mpi PE
-  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Mp "/tmp/mpi.pe"'
-  ignore_errors: yes
+#- name: Modify mpi PE
+#  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Mp "/tmp/mpi.pe"'
+#  ignore_errors: yes
 
 
