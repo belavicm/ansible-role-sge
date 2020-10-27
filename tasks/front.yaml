@@ -50,6 +50,12 @@
 
 - name: Copy 'all_q.conf' file
   copy: dest=/tmp/all.q src=all_q.conf mode=0644 force=no
+  
+- name: Copy 'mpisingle.pe' file
+  copy: dest=/tmp/mpisingle.pe src=mpisingle.pe mode=0644 force=no
+  
+- name: Copy 'mpi.pe' file
+  copy: dest=/tmp/mpi.pe src=mpi.pe mode=0644 force=no
 
 #Change cpu slots for wn {{sge_wn_cpus}}
 - name: Change cpu slots for wn
@@ -78,4 +84,14 @@
 #- shell: qconf -Mq /tmp/all.q
 - name: Modify default queue
   action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Mq "/tmp/all.q"'
+  ignore_errors: yes
+
+#- shell: add mpisingle PE
+- name: Add mpisingle PE
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -Ap "/tmp/mpisingle.pe"'
+  ignore_errors: yes
+  
+#- shell: delete mpi PE
+- name: Remove mpi PE
+  action: shell bash -lc '/opt/sge/bin/lx-amd64/qconf -dp mpi'
   ignore_errors: yes
