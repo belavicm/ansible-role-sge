@@ -1,0 +1,11 @@
+[Unit]
+Description=Gridengine execution daemon
+After=network.target
+
+[Service]
+Type=forking
+Environment=SGE_ROOT=/opt/sge/
+ExecStart=/opt/sge/bin/lx-amd64/sge_qmaster
+
+[Install]
+WantedBy=multi-user.target
